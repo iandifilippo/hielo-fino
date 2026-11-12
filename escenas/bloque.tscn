@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bunomow7ir633"]
+
+[ext_resource type="Script" uid="uid://ytlf4dukhp51" path="res://scripts/bloque.gd" id="1_mqrv0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nmd57"]
+albedo_color = Color(0.2509804, 0.5019608, 0.9411765, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5bdln"]
+material = SubResource("StandardMaterial3D_nmd57")
+size = Vector3(1, 2, 1)
+
+[node name="Bloque" type="Node3D" unique_id=1037063742]
+script = ExtResource("1_mqrv0")
+
+[node name="Malla" type="MeshInstance3D" parent="." unique_id=63809079]
+mesh = SubResource("BoxMesh_5bdln")

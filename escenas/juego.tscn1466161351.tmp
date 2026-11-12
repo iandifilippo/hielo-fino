@@ -1,0 +1,91 @@
+[gd_scene format=3 uid="uid://b6qd421pfwe81"]
+
+[ext_resource type="Script" uid="uid://cmkxjaj6o1ujq" path="res://scripts/juego.gd" id="1_dayui"]
+[ext_resource type="PackedScene" uid="uid://dyxxcbevcekcc" path="res://escenas/casilla.tscn" id="2_mf1lf"]
+[ext_resource type="PackedScene" uid="uid://bunomow7ir633" path="res://escenas/bloque.tscn" id="2_v0a8y"]
+
+[sub_resource type="Environment" id="Environment_5bdln"]
+background_mode = 1
+background_color = Color(0.050980393, 0.078431375, 0.16078432, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.54901963, 0.61960787, 0.8, 1)
+ambient_light_energy = 0.6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nmd57"]
+albedo_color = Color(0.627451, 0.12156863, 0.2509804, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_5bdln"]
+material = SubResource("StandardMaterial3D_nmd57")
+size = Vector2(80, 80)
+
+[node name="Juego" type="Node3D" unique_id=2101957270]
+script = ExtResource("1_dayui")
+escena_casilla = ExtResource("2_mf1lf")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1324383717]
+environment = SubResource("Environment_5bdln")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=679244769]
+transform = Transform3D(0.8660254, 0.40957603, -0.28678823, 0, 0.57357645, 0.81915206, 0.5, -0.7094065, 0.49673176, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Agua" type="MeshInstance3D" parent="." unique_id=463681438]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8, 0)
+mesh = SubResource("PlaneMesh_5bdln")
+
+[node name="PivoteCamara" type="Node3D" parent="." unique_id=1868811809]
+
+[node name="Camara" type="Camera3D" parent="PivoteCamara" unique_id=637191923]
+
+[node name="Tablero" type="Node3D" parent="." unique_id=303827260]
+
+[node name="Bloque" parent="." unique_id=1037063742 instance=ExtResource("2_v0a8y")]
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1361902428]
+
+[node name="Titulo" type="Label" parent="HUD" unique_id=1478871097]
+offset_left = 20.0
+offset_top = 15.0
+offset_right = 60.0
+offset_bottom = 38.0
+theme_override_font_sizes/font_size = 28
+
+[node name="Info" type="Label" parent="HUD" unique_id=1933341167]
+offset_left = 20.0
+offset_top = 55.0
+offset_right = 60.0
+offset_bottom = 83.0
+theme_override_font_sizes/font_size = 20
+
+[node name="Mensaje" type="Label" parent="HUD" unique_id=1910947602]
+offset_left = 20.0
+offset_top = 95.0
+offset_right = 60.0
+offset_bottom = 129.0
+theme_override_colors/font_color = Color(1, 0.8, 0.4, 1)
+theme_override_font_sizes/font_size = 24
+
+[node name="Ayuda" type="Label" parent="HUD" unique_id=811351126]
+offset_left = 20.0
+offset_top = 135.0
+offset_right = 60.0
+offset_bottom = 166.0
+theme_override_font_sizes/font_size = 22
+
+[node name="Teclas" type="Label" parent="HUD" unique_id=327681736]
+offset_left = 20.0
+offset_top = 175.0
+offset_right = 60.0
+offset_bottom = 198.0
+text = "W A S D: voltear   Flechas: mover la vista   Z: deshacer   R: reiniciar   Esc: menú"
+
+[node name="Tiempo" type="Label" parent="HUD" unique_id=1698660976]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -80.0
+offset_bottom = 55.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 40
+text = "0:00"
+horizontal_alignment = 2

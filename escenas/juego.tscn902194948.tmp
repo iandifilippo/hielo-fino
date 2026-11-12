@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://b6qd421pfwe81"]
+
+[ext_resource type="Script" uid="uid://cmkxjaj6o1ujq" path="res://scripts/juego.gd" id="1_dayui"]
+
+[sub_resource type="Environment" id="Environment_5bdln"]
+background_mode = 1
+background_color = Color(0.050980393, 0.078431375, 0.16078432, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.54901963, 0.61960787, 0.8, 1)
+ambient_light_energy = 0.6
+
+[node name="Juego" type="Node3D" unique_id=2101957270]
+script = ExtResource("1_dayui")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1324383717]
+environment = SubResource("Environment_5bdln")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=679244769]
+transform = Transform3D(0.8660254, 0.40957603, -0.28678823, 0, 0.57357645, 0.81915206, 0.5, -0.7094065, 0.49673176, 0, 0, 0)
+shadow_enabled = true
