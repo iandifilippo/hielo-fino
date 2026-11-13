@@ -1,89 +1,33 @@
 extends Node3D
 
-# Arma el nivel, lee las teclas y aplica las reglas de Hielo Fino.
+# REGLAS DEL JUEGO Y TECLAS. LO VISUAL ESTÁ EN juego.tscn
+
+@onready var tablero: Node3D = $Tablero
+@onready var bloque: Bloque = $Bloque
+@onready var camara: Camera3D = $Camara
+@onready var lbl_titulo: Label = $HUD/Titulo
+@onready var lbl_info: Label = $HUD/Info
+@onready var lbl_mensaje: Label = $HUD/Mensaje
+@onready var lbl_ayuda: Label = $HUD/Ayuda
+@onready var lbl_tiempo: Label = $HUD/Tiempo
 
 var datos: Dictionary
 var casillas := {}            # Vector2i -> Casilla
 var meta := Vector2i.ZERO
-var bloque: Bloque
-var tablero: Node3D
-var camara: Camera3D
 
-var historial := []           # cómo estaba todo antes de cada volteo (para Z)
+var historial := []           # FOTOS PARA DESHACER CON Z
 var volteos := 0
 var tiempo := 0.0
 var estado := "jugando"       # "jugando", "caido" o "gano"
-var quieto := 0.0             # segundos sin tocar nada (para la ayuda del tutorial)
-
-var lbl_titulo: Label
-var lbl_info: Label
-var lbl_mensaje: Label
-var lbl_ayuda: Label
+var quieto := 0.0             # SEGUNDOS SIN TOCAR NADA
 
 func _ready() -> void:
-	_crear_mundo()
-	_crear_hud()
-	cargar_nivel(Niveles.actual)
+	cargar_nivel()
 
-# ---------- armar la escena ----------
+# ---------- CARGAR NIVEL ----------
 
-func _crear_mundo() -> void:
-	var entorno := WorldEnvironment.new()
-	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.05, 0.08, 0.16)
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.55, 0.62, 0.8)
-	env.ambient_light_energy = 0.6
-	entorno.environment = env
-	add_child(entorno)
-
-	var luz := DirectionalLight3D.new()
-	luz.rotation_degrees = Vector3(-55, -30, 0)
-	luz.shadow_enabled = true
-	add_child(luz)
-
-	var agua := MeshInstance3D.new()
-	var plano := PlaneMesh.new()
-	plano.size = Vector2(80, 80)
-	agua.mesh = plano
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.04, 0.12, 0.25)
-	agua.material_override = mat
-	agua.position = Vector3(0, -0.8, 0)
-	add_child(agua)
-
-	camara = Camera3D.new()
-	add_child(camara)
-
-	tablero = Node3D.new()
-	add_child(tablero)
-
-	bloque = Bloque.new()
-	add_child(bloque)
-
-func _crear_hud() -> void:
-	var capa := CanvasLayer.new()
-	add_child(capa)
-	lbl_titulo = _label(capa, Vector2(20, 15), 28)
-	lbl_info = _label(capa, Vector2(20, 55), 20)
-	lbl_mensaje = _label(capa, Vector2(20, 95), 24)
-	lbl_mensaje.add_theme_color_override("font_color", Color(1, 0.8, 0.4))
-	lbl_ayuda = _label(capa, Vector2(20, 135), 22)
-	var teclas := _label(capa, Vector2(20, 175), 16)
-	teclas.text = "Flechas / WASD: voltear   Z: deshacer   R: reiniciar   Esc: menú"
-
-func _label(padre: Node, pos: Vector2, tam: int) -> Label:
-	var l := Label.new()
-	l.position = pos
-	l.add_theme_font_size_override("font_size", tam)
-	padre.add_child(l)
-	return l
-
-# ---------- cargar un nivel ----------
-
-func cargar_nivel(i: int) -> void:
-	datos = Niveles.LISTA[i]
+func cargar_nivel() -> void:
+	datos = Niveles.nivel()
 	for hijo in tablero.get_children():
 		hijo.queue_free()
 	casillas.clear()
@@ -95,7 +39,7 @@ func cargar_nivel(i: int) -> void:
 			var letra := fila[x]
 			if letra == ".":
 				continue
-			var c := Casilla.new()
+			var c := preload("res://escenas/casilla.tscn").instantiate() as Casilla
 			c.position = Vector3(x + 0.5, -0.15, z + 0.5)
 			tablero.add_child(c)
 			c.configurar(letra)
@@ -106,7 +50,7 @@ func cargar_nivel(i: int) -> void:
 				meta = Vector2i(x, z)
 	bloque.colocar(inicio.x, inicio.y, "S")
 
-	# La cámara mira al centro del tablero desde arriba y adelante
+	# CÁMARA MIRANDO AL CENTRO DEL TABLERO
 	var ancho: float = filas[0].length()
 	var alto: float = filas.size()
 	var centro := Vector3(ancho / 2.0, 0, alto / 2.0)
@@ -119,23 +63,27 @@ func cargar_nivel(i: int) -> void:
 	tiempo = 0.0
 	quieto = 0.0
 	estado = "jugando"
-	lbl_titulo.text = "Nivel %d: %s" % [i + 1, datos["nombre"]]
+	var nombres := {"facil": "Fácil"}
+	lbl_titulo.text = "%s %d: %s" % [nombres[Niveles.pack], Niveles.actual + 1, datos["nombre"]]
 	lbl_mensaje.text = ""
 	lbl_ayuda.text = ""
-	if i == 0:
+	if datos.get("sin_caida", false):
 		lbl_mensaje.text = "Lleva el bloque PARADO hasta la casilla naranja"
 
-# ---------- cada frame ----------
+# ---------- CADA FRAME ----------
 
 func _process(delta: float) -> void:
 	if estado != "gano":
 		tiempo += delta
 	quieto += delta
-	if Niveles.actual == 0 and volteos == 0 and quieto > 4.0:
+	if datos.get("sin_caida", false) and volteos == 0 and quieto > 4.0:
 		lbl_ayuda.text = "Usa las flechas  ←  ↑  ↓  →  (o W A S D)"
-	lbl_info.text = "Volteos: %d   (par: %d)     Tiempo: %.1f s" % [volteos, datos["par"], tiempo]
+	lbl_info.text = "Volteos: %d   (par: %d)" % [volteos, datos["par"]]
+	# RELOJ DE LA ESQUINA
+	var seg := int(tiempo)
+	lbl_tiempo.text = "%d:%02d" % [seg / 60, seg % 60]
 
-# ---------- teclas ----------
+# ---------- TECLAS ----------
 
 func _unhandled_input(event: InputEvent) -> void:
 	var tecla := event as InputEventKey
@@ -156,14 +104,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_Z:
 			deshacer()
 		KEY_R:
-			cargar_nivel(Niveles.actual)
+			cargar_nivel()
 		KEY_ENTER, KEY_KP_ENTER, KEY_SPACE:
 			if estado == "gano":
 				siguiente_nivel()
 		KEY_ESCAPE:
 			get_tree().change_scene_to_file("res://escenas/menu.tscn")
 
-# ---------- reglas ----------
+# ---------- REGLAS ----------
 
 func mover(dir: Vector2i) -> void:
 	if estado != "jugando":
@@ -175,7 +123,7 @@ func mover(dir: Vector2i) -> void:
 		if not casillas.has(c) or casillas[c].roto:
 			cae = true
 	if cae and datos.get("sin_caida", false):
-		return   # en el tutorial el borde no deja caer
+		return   # EN EL TUTORIAL NO SE PUEDE CAER
 
 	_guardar()
 	var viejas := bloque.celdas()
@@ -183,7 +131,7 @@ func mover(dir: Vector2i) -> void:
 	lbl_ayuda.text = ""
 	await bloque.voltear(dir, sig)
 
-	# Las casillas que ya aguantaron todo se rompen cuando el bloque se va
+	# SE ROMPEN AL SALIR SI YA NO AGUANTAN MÁS
 	for c in viejas:
 		casillas[c].al_salir()
 
@@ -229,8 +177,8 @@ func deshacer() -> void:
 
 func siguiente_nivel() -> void:
 	Niveles.actual += 1
-	if Niveles.actual >= Niveles.LISTA.size():
+	if Niveles.actual >= Niveles.cantidad():
 		Niveles.actual = 0
 		get_tree().change_scene_to_file("res://escenas/menu.tscn")
 	else:
-		cargar_nivel(Niveles.actual)
+		cargar_nivel()

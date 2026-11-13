@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://dyxxcbevcekcc"]
+
+[ext_resource type="Script" uid="uid://csbg1kaat4koo" path="res://scripts/casilla.gd" id="1_eldc2"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_nieve"]
+albedo_color = Color(0.95, 0.96, 0.98, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_hielo"]
+albedo_color = Color(0.62, 0.82, 0.95, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_meta"]
+albedo_color = Color(0.96, 0.62, 0.15, 1)
+
+[sub_resource type="BoxMesh" id="Caja"]
+size = Vector3(0.96, 0.3, 0.96)
+
+[sub_resource type="StandardMaterial3D" id="Mat_grieta"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="Linea"]
+material = SubResource("Mat_grieta")
+size = Vector3(0.7, 0.02, 0.05)
+
+[node name="Casilla" type="Node3D"]
+script = ExtResource("1_eldc2")
+mat_nieve = SubResource("Mat_nieve")
+mat_hielo = SubResource("Mat_hielo")
+mat_meta = SubResource("Mat_meta")
+
+[node name="Malla" type="MeshInstance3D" parent="."]
+mesh = SubResource("Caja")
+
+[node name="Grieta" type="Node3D" parent="."]
+
+[node name="Linea1" type="MeshInstance3D" parent="Grieta"]
+transform = Transform3D(0.81915206, 0, 0.57357645, 0, 1, 0, -0.57357645, 0, 0.81915206, 0, 0.16, 0)
+mesh = SubResource("Linea")
+
+[node name="Linea2" type="MeshInstance3D" parent="Grieta"]
+transform = Transform3D(0.64278764, 0, -0.76604444, 0, 1, 0, 0.76604444, 0, 0.64278764, 0, 0.16, 0)
+mesh = SubResource("Linea")
+
+[node name="Linea3" type="MeshInstance3D" parent="Grieta"]
+transform = Transform3D(0.17364822, 0, 0.9848077, 0, 1, 0, -0.9848077, 0, 0.17364822, 0, 0.16, 0)
+mesh = SubResource("Linea")
