@@ -1,7 +1,6 @@
 extends Node3D
 
-# Lee las teclas y aplica las reglas de Hielo Fino.
-# Lo que se ve (luz, agua, cámara, bloque y textos) está en la escena juego.tscn.
+# REGLAS DEL JUEGO Y TECLAS. LO VISUAL ESTÁ EN juego.tscn
 
 @onready var tablero: Node3D = $Tablero
 @onready var bloque: Bloque = $Bloque
@@ -15,19 +14,19 @@ var datos: Dictionary
 var casillas := {}            # Vector2i -> Casilla
 var meta := Vector2i.ZERO
 
-var historial := []           # cómo estaba todo antes de cada volteo (para Z)
+var historial := []           # FOTOS PARA DESHACER CON Z
 var volteos := 0
 var tiempo := 0.0
 var estado := "jugando"       # "jugando", "caido" o "gano"
-var quieto := 0.0             # segundos sin tocar nada (para la ayuda del tutorial)
+var quieto := 0.0             # SEGUNDOS SIN TOCAR NADA
 
 func _ready() -> void:
-	cargar_nivel(Niveles.actual)
+	cargar_nivel()
 
-# ---------- cargar un nivel ----------
+# ---------- CARGAR NIVEL ----------
 
-func cargar_nivel(i: int) -> void:
-	datos = Niveles.LISTA[i]
+func cargar_nivel() -> void:
+	datos = Niveles.nivel()
 	for hijo in tablero.get_children():
 		hijo.queue_free()
 	casillas.clear()
@@ -50,7 +49,7 @@ func cargar_nivel(i: int) -> void:
 				meta = Vector2i(x, z)
 	bloque.colocar(inicio.x, inicio.y, "S")
 
-	# La cámara mira al centro del tablero desde arriba y adelante
+	# CÁMARA MIRANDO AL CENTRO DEL TABLERO
 	var ancho: float = filas[0].length()
 	var alto: float = filas.size()
 	var centro := Vector3(ancho / 2.0, 0, alto / 2.0)
@@ -63,23 +62,24 @@ func cargar_nivel(i: int) -> void:
 	tiempo = 0.0
 	quieto = 0.0
 	estado = "jugando"
-	lbl_titulo.text = "Nivel %d: %s" % [i + 1, datos["nombre"]]
+	var nombres := {"facil": "Fácil"}
+	lbl_titulo.text = "%s %d: %s" % [nombres[Niveles.pack], Niveles.actual + 1, datos["nombre"]]
 	lbl_mensaje.text = ""
 	lbl_ayuda.text = ""
-	if i == 0:
+	if datos.get("sin_caida", false):
 		lbl_mensaje.text = "Lleva el bloque PARADO hasta la casilla naranja"
 
-# ---------- cada frame ----------
+# ---------- CADA FRAME ----------
 
 func _process(delta: float) -> void:
 	if estado != "gano":
 		tiempo += delta
 	quieto += delta
-	if Niveles.actual == 0 and volteos == 0 and quieto > 4.0:
+	if datos.get("sin_caida", false) and volteos == 0 and quieto > 4.0:
 		lbl_ayuda.text = "Usa las flechas  ←  ↑  ↓  →  (o W A S D)"
 	lbl_info.text = "Volteos: %d   (par: %d)     Tiempo: %.1f s" % [volteos, datos["par"], tiempo]
 
-# ---------- teclas ----------
+# ---------- TECLAS ----------
 
 func _unhandled_input(event: InputEvent) -> void:
 	var tecla := event as InputEventKey
@@ -100,14 +100,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_Z:
 			deshacer()
 		KEY_R:
-			cargar_nivel(Niveles.actual)
+			cargar_nivel()
 		KEY_ENTER, KEY_KP_ENTER, KEY_SPACE:
 			if estado == "gano":
 				siguiente_nivel()
 		KEY_ESCAPE:
 			get_tree().change_scene_to_file("res://escenas/menu.tscn")
 
-# ---------- reglas ----------
+# ---------- REGLAS ----------
 
 func mover(dir: Vector2i) -> void:
 	if estado != "jugando":
@@ -119,7 +119,7 @@ func mover(dir: Vector2i) -> void:
 		if not casillas.has(c) or casillas[c].roto:
 			cae = true
 	if cae and datos.get("sin_caida", false):
-		return   # en el tutorial el borde no deja caer
+		return   # EN EL TUTORIAL NO SE PUEDE CAER
 
 	_guardar()
 	var viejas := bloque.celdas()
@@ -127,7 +127,7 @@ func mover(dir: Vector2i) -> void:
 	lbl_ayuda.text = ""
 	await bloque.voltear(dir, sig)
 
-	# Las casillas que ya aguantaron todo se rompen cuando el bloque se va
+	# SE ROMPEN AL SALIR SI YA NO AGUANTAN MÁS
 	for c in viejas:
 		casillas[c].al_salir()
 
@@ -173,8 +173,8 @@ func deshacer() -> void:
 
 func siguiente_nivel() -> void:
 	Niveles.actual += 1
-	if Niveles.actual >= Niveles.LISTA.size():
+	if Niveles.actual >= Niveles.cantidad():
 		Niveles.actual = 0
 		get_tree().change_scene_to_file("res://escenas/menu.tscn")
 	else:
-		cargar_nivel(Niveles.actual)
+		cargar_nivel()
