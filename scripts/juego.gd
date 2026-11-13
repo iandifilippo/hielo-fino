@@ -1,13 +1,19 @@
 extends Node3D
 
-# Arma el nivel, lee las teclas y aplica las reglas de Hielo Fino.
+# Lee las teclas y aplica las reglas de Hielo Fino.
+# Lo que se ve (luz, agua, cámara, bloque y textos) está en la escena juego.tscn.
+
+@onready var tablero: Node3D = $Tablero
+@onready var bloque: Bloque = $Bloque
+@onready var camara: Camera3D = $Camara
+@onready var lbl_titulo: Label = $HUD/Titulo
+@onready var lbl_info: Label = $HUD/Info
+@onready var lbl_mensaje: Label = $HUD/Mensaje
+@onready var lbl_ayuda: Label = $HUD/Ayuda
 
 var datos: Dictionary
 var casillas := {}            # Vector2i -> Casilla
 var meta := Vector2i.ZERO
-var bloque: Bloque
-var tablero: Node3D
-var camara: Camera3D
 
 var historial := []           # cómo estaba todo antes de cada volteo (para Z)
 var volteos := 0
@@ -15,70 +21,8 @@ var tiempo := 0.0
 var estado := "jugando"       # "jugando", "caido" o "gano"
 var quieto := 0.0             # segundos sin tocar nada (para la ayuda del tutorial)
 
-var lbl_titulo: Label
-var lbl_info: Label
-var lbl_mensaje: Label
-var lbl_ayuda: Label
-
 func _ready() -> void:
-	_crear_mundo()
-	_crear_hud()
 	cargar_nivel(Niveles.actual)
-
-# ---------- armar la escena ----------
-
-func _crear_mundo() -> void:
-	var entorno := WorldEnvironment.new()
-	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.05, 0.08, 0.16)
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.55, 0.62, 0.8)
-	env.ambient_light_energy = 0.6
-	entorno.environment = env
-	add_child(entorno)
-
-	var luz := DirectionalLight3D.new()
-	luz.rotation_degrees = Vector3(-55, -30, 0)
-	luz.shadow_enabled = true
-	add_child(luz)
-
-	var agua := MeshInstance3D.new()
-	var plano := PlaneMesh.new()
-	plano.size = Vector2(80, 80)
-	agua.mesh = plano
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.04, 0.12, 0.25)
-	agua.material_override = mat
-	agua.position = Vector3(0, -0.8, 0)
-	add_child(agua)
-
-	camara = Camera3D.new()
-	add_child(camara)
-
-	tablero = Node3D.new()
-	add_child(tablero)
-
-	bloque = preload("res://escenas/bloque.tscn").instantiate() as Bloque
-	add_child(bloque)
-
-func _crear_hud() -> void:
-	var capa := CanvasLayer.new()
-	add_child(capa)
-	lbl_titulo = _label(capa, Vector2(20, 15), 28)
-	lbl_info = _label(capa, Vector2(20, 55), 20)
-	lbl_mensaje = _label(capa, Vector2(20, 95), 24)
-	lbl_mensaje.add_theme_color_override("font_color", Color(1, 0.8, 0.4))
-	lbl_ayuda = _label(capa, Vector2(20, 135), 22)
-	var teclas := _label(capa, Vector2(20, 175), 16)
-	teclas.text = "Flechas / WASD: voltear   Z: deshacer   R: reiniciar   Esc: menú"
-
-func _label(padre: Node, pos: Vector2, tam: int) -> Label:
-	var l := Label.new()
-	l.position = pos
-	l.add_theme_font_size_override("font_size", tam)
-	padre.add_child(l)
-	return l
 
 # ---------- cargar un nivel ----------
 
