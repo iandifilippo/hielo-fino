@@ -9,6 +9,7 @@ extends Node3D
 @onready var lbl_info: Label = $HUD/Info
 @onready var lbl_mensaje: Label = $HUD/Mensaje
 @onready var lbl_ayuda: Label = $HUD/Ayuda
+@onready var lbl_tiempo: Label = $HUD/Tiempo
 
 var datos: Dictionary
 var casillas := {}            # Vector2i -> Casilla
@@ -77,7 +78,10 @@ func _process(delta: float) -> void:
 	quieto += delta
 	if datos.get("sin_caida", false) and volteos == 0 and quieto > 4.0:
 		lbl_ayuda.text = "Usa las flechas  ←  ↑  ↓  →  (o W A S D)"
-	lbl_info.text = "Volteos: %d   (par: %d)     Tiempo: %.1f s" % [volteos, datos["par"], tiempo]
+	lbl_info.text = "Volteos: %d   (par: %d)" % [volteos, datos["par"]]
+	# RELOJ DE LA ESQUINA
+	var seg := int(tiempo)
+	lbl_tiempo.text = "%d:%02d" % [seg / 60, seg % 60]
 
 # ---------- TECLAS ----------
 
