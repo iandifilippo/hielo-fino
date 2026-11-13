@@ -59,7 +59,7 @@ func _crear_mundo() -> void:
 	tablero = Node3D.new()
 	add_child(tablero)
 
-	bloque = Bloque.new()
+	bloque = preload("res://escenas/bloque.tscn").instantiate() as Bloque
 	add_child(bloque)
 
 func _crear_hud() -> void:
