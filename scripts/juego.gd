@@ -95,7 +95,7 @@ func cargar_nivel(i: int) -> void:
 			var letra := fila[x]
 			if letra == ".":
 				continue
-			var c := Casilla.new()
+			var c := preload("res://escenas/casilla.tscn").instantiate() as Casilla
 			c.position = Vector3(x + 0.5, -0.15, z + 0.5)
 			tablero.add_child(c)
 			c.configurar(letra)
