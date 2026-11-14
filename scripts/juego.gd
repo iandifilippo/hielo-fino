@@ -11,6 +11,7 @@ extends Node3D
 @onready var lbl_ayuda: Label = $HUD/Ayuda
 @onready var lbl_tiempo: Label = $HUD/Tiempo
 @onready var lbl_progreso: Label = $HUD/Progreso
+@onready var lbl_aviso: Label = $HUD/Aviso
 
 var datos: Dictionary
 var casillas := {}            # Vector2i -> Casilla
@@ -70,6 +71,7 @@ func cargar_nivel() -> void:
 	lbl_progreso.text = "Nivel %d / %d" % [Niveles.actual + 1, Niveles.cantidad()]
 	lbl_mensaje.text = ""
 	lbl_ayuda.text = ""
+	lbl_aviso.text = ""
 	if datos.get("sin_caida", false):
 		lbl_mensaje.text = "Lleva el bloque PARADO hasta la casilla naranja"
 
@@ -141,7 +143,8 @@ func mover(dir: Vector2i) -> void:
 	if cae:
 		estado = "caido"
 		bloque.hundir(3.0, 1.0)
-		lbl_mensaje.text = "¡Te caíste!  Z para deshacer o R para reiniciar"
+		# AVISO EN EL CENTRO DE LA PANTALLA
+		lbl_aviso.text = "¡Te caíste!\nZ para deshacer  ·  R para reiniciar"
 		return
 
 	for c in nuevas:
@@ -159,7 +162,7 @@ func _ganar() -> void:
 		estrellas = 3
 	elif volteos <= par * 1.5:
 		estrellas = 2
-	lbl_mensaje.text = "¡Nivel completado!  %s   Enter para seguir" % "★".repeat(estrellas)
+	lbl_aviso.text = "¡Lo lograste!  %s\nPulsa Espacio para seguir" % "★".repeat(estrellas)
 
 func _guardar() -> void:
 	var foto := {}
@@ -176,7 +179,7 @@ func deshacer() -> void:
 	var b: Array = foto["bloque"]
 	bloque.colocar(b[0], b[1], b[2])
 	estado = "jugando"
-	lbl_mensaje.text = ""
+	lbl_aviso.text = ""
 
 func siguiente_nivel() -> void:
 	Niveles.actual += 1
