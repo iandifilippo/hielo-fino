@@ -72,3 +72,16 @@ grow_horizontal = 0
 theme_override_font_sizes/font_size = 40
 text = "0:00"
 horizontal_alignment = 2
+
+[node name="Progreso" type="Label" parent="HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -270.0
+offset_top = 65.0
+offset_right = -20.0
+offset_bottom = 100.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 24
+text = "Nivel 1 / 5"
+horizontal_alignment = 2

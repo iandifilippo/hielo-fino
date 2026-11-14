@@ -10,6 +10,7 @@ extends Node3D
 @onready var lbl_mensaje: Label = $HUD/Mensaje
 @onready var lbl_ayuda: Label = $HUD/Ayuda
 @onready var lbl_tiempo: Label = $HUD/Tiempo
+@onready var lbl_progreso: Label = $HUD/Progreso
 
 var datos: Dictionary
 var casillas := {}            # Vector2i -> Casilla
@@ -65,6 +66,8 @@ func cargar_nivel() -> void:
 	estado = "jugando"
 	var nombres := {"facil": "Fácil"}
 	lbl_titulo.text = "%s %d: %s" % [nombres[Niveles.pack], Niveles.actual + 1, datos["nombre"]]
+	# CONTADOR DE NIVEL ACTUAL / TOTAL
+	lbl_progreso.text = "Nivel %d / %d" % [Niveles.actual + 1, Niveles.cantidad()]
 	lbl_mensaje.text = ""
 	lbl_ayuda.text = ""
 	if datos.get("sin_caida", false):
