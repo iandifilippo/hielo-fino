@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cmkxjaj6o1ujq" path="res://scripts/juego.gd" id="1_dayui"]
 [ext_resource type="PackedScene" uid="uid://bunomow7ir633" path="res://escenas/bloque.tscn" id="2_v0a8y"]
+[ext_resource type="Script" path="res://scripts/reloj.gd" id="3_reloj"]
 
 [sub_resource type="Environment" id="Entorno"]
 background_mode = 1
@@ -61,6 +62,7 @@ offset_top = 135.0
 theme_override_font_sizes/font_size = 22
 
 [node name="Tiempo" type="Label" parent="HUD"]
+script = ExtResource("3_reloj")
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0

@@ -9,7 +9,7 @@ extends Node3D
 @onready var lbl_info: Label = $HUD/Info
 @onready var lbl_mensaje: Label = $HUD/Mensaje
 @onready var lbl_ayuda: Label = $HUD/Ayuda
-@onready var lbl_tiempo: Label = $HUD/Tiempo
+@onready var reloj: Reloj = $HUD/Tiempo
 @onready var lbl_progreso: Label = $HUD/Progreso
 @onready var lbl_aviso: Label = $HUD/Aviso
 
@@ -20,7 +20,7 @@ var meta := Vector2i.ZERO
 var historial := []           # FOTOS PARA DESHACER CON Z
 var volteos := 0
 var tiempo := 0.0
-var estado := "jugando"       # "jugando", "caido" o "gano"
+var estado := "jugando"       # "jugando", "caido", "gano" O "tiempo"
 var quieto := 0.0             # SEGUNDOS SIN TOCAR NADA
 
 func _ready() -> void:
@@ -65,7 +65,7 @@ func cargar_nivel() -> void:
 	tiempo = 0.0
 	quieto = 0.0
 	estado = "jugando"
-	var nombres := {"facil": "Fácil"}
+	var nombres := {"facil": "Fácil", "reto": "Reto"}
 	lbl_titulo.text = "%s %d: %s" % [nombres[Niveles.pack], Niveles.actual + 1, datos["nombre"]]
 	# CONTADOR DE NIVEL ACTUAL / TOTAL
 	lbl_progreso.text = "Nivel %d / %d" % [Niveles.actual + 1, Niveles.cantidad()]
@@ -74,19 +74,24 @@ func cargar_nivel() -> void:
 	lbl_aviso.text = ""
 	if datos.get("sin_caida", false):
 		lbl_mensaje.text = "Lleva el bloque PARADO hasta la casilla naranja"
+	# MODO RETO: TIEMPO LÍMITE DEL NIVEL
+	reloj.limite = float(datos.get("tiempo", 0))
+	if reloj.limite > 0.0:
+		lbl_mensaje.text = "¡Contra el reloj!  Tienes %d:%02d" % [int(reloj.limite) / 60, int(reloj.limite) % 60]
 
 # ---------- CADA FRAME ----------
 
 func _process(delta: float) -> void:
-	if estado != "gano":
+	if estado == "jugando" or estado == "caido":
 		tiempo += delta
 	quieto += delta
 	if datos.get("sin_caida", false) and volteos == 0 and quieto > 4.0:
 		lbl_ayuda.text = "Usa las flechas  ←  ↑  ↓  →  (o W A S D)"
 	lbl_info.text = "Volteos: %d   (par: %d)" % [volteos, datos["par"]]
-	# RELOJ DE LA ESQUINA
-	var seg := int(tiempo)
-	lbl_tiempo.text = "%d:%02d" % [seg / 60, seg % 60]
+	reloj.mostrar(tiempo)
+	if reloj.se_acabo(tiempo) and (estado == "jugando" or estado == "caido"):
+		estado = "tiempo"
+		lbl_aviso.text = "¡Se acabó el tiempo!\nPulsa R para reintentar"
 
 # ---------- TECLAS ----------
 
@@ -171,7 +176,7 @@ func _guardar() -> void:
 	historial.push_back({"bloque": [bloque.bx, bloque.bz, bloque.o], "casillas": foto})
 
 func deshacer() -> void:
-	if historial.is_empty() or estado == "gano":
+	if historial.is_empty() or estado == "gano" or estado == "tiempo":
 		return
 	var foto: Dictionary = historial.pop_back()
 	for pos in foto["casillas"]:
