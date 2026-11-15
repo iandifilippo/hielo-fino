@@ -59,3 +59,10 @@ func actualizar() -> void:
 	visible = not roto
 	# Grietas negras cuando solo le queda 1 aterrizaje
 	grieta.visible = (tipo == "H" or tipo == "G") and restantes() == 1
+
+# TIEMBLA MEDIO SEGUNDO PARA AVISAR QUE SE VA A ROMPER
+func temblar() -> void:
+	var tw := create_tween()
+	for i in 10:
+		tw.tween_property(malla, "position:x", randf_range(-0.04, 0.04), 0.045)
+	tw.tween_property(malla, "position:x", 0.0, 0.05)

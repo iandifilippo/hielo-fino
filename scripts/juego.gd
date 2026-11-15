@@ -180,6 +180,21 @@ func mover(dir: Vector2i) -> void:
 
 	if sig[2] == "S" and Vector2i(sig[0], sig[1]) == meta:
 		_ganar()
+	else:
+		_avisar_grietas()
+
+# LAS GRIETAS A UN VOLTEO DE DISTANCIA TIEMBLAN
+func _avisar_grietas() -> void:
+	var avisadas := {}
+	for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		var s := Bloque.siguiente(bloque.bx, bloque.bz, bloque.o, d)
+		for c in Bloque.celdas_de(s[0], s[1], s[2]):
+			if not casillas.has(c) or avisadas.has(c):
+				continue
+			var k: Casilla = casillas[c]
+			if not k.roto and (k.tipo == "H" or k.tipo == "G") and k.restantes() == 1:
+				avisadas[c] = true
+				k.temblar()
 
 func _ganar() -> void:
 	estado = "gano"
