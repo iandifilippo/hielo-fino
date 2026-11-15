@@ -158,6 +158,12 @@ func mover(dir: Vector2i) -> void:
 		bloque.hundir(3.0, 1.0)
 		# AVISO EN EL CENTRO DE LA PANTALLA
 		lbl_aviso.text = "¡Te caíste!\nZ para deshacer  ·  R para reiniciar"
+		# SALPICADURA CUANDO EL BLOQUE TOCA EL AGUA
+		var donde := Vector3(bloque.global_position.x, -0.75, bloque.global_position.z)
+		await get_tree().create_timer(0.3).timeout
+		if estado == "caido":
+			Efectos.salpicadura(self, donde)
+			sonidos.tocar("salpicadura", randf_range(0.95, 1.05))
 		return
 
 	# GRIETA SI EL HIELO SE AGRIETA, SI NO UN GOLPE SECO
