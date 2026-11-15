@@ -140,6 +140,7 @@ func mover(dir: Vector2i) -> void:
 	var viejas := bloque.celdas()
 	volteos += 1
 	lbl_ayuda.text = ""
+	sonidos.tocar("volteo", randf_range(0.9, 1.15))
 	await bloque.voltear(dir, sig)
 
 	# SE ROMPEN AL SALIR SI YA NO AGUANTAN MÁS

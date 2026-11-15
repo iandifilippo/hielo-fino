@@ -8,8 +8,9 @@ const ARCHIVOS := {
 	"grieta": "res://sonidos/grieta.wav",
 	"rotura": "res://sonidos/rotura.wav",
 	"salpicadura": "res://sonidos/salpicadura.wav",
+	"volteo": "res://sonidos/volteo.wav",
 }
-const VOLUMEN := {"golpe": -10.0, "grieta": -4.0, "rotura": -3.0, "salpicadura": -2.0}
+const VOLUMEN := {"golpe": -10.0, "grieta": -4.0, "rotura": -3.0, "salpicadura": -2.0, "volteo": -14.0}
 
 var _jugadores := {}
 
