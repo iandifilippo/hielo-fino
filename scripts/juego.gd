@@ -10,6 +10,7 @@ extends Node3D
 @onready var lbl_mensaje: Label = $HUD/Mensaje
 @onready var lbl_ayuda: Label = $HUD/Ayuda
 @onready var reloj: Reloj = $HUD/Tiempo
+@onready var sonidos: Sonidos = $Sonidos
 @onready var lbl_progreso: Label = $HUD/Progreso
 @onready var lbl_aviso: Label = $HUD/Aviso
 
@@ -65,7 +66,7 @@ func cargar_nivel() -> void:
 	tiempo = 0.0
 	quieto = 0.0
 	estado = "jugando"
-	var nombres := {"facil": "Fácil", "reto": "Reto"}
+	var nombres := {"facil": "Fácil", "dificil": "Difícil", "reto": "Reto"}
 	lbl_titulo.text = "%s %d: %s" % [nombres[Niveles.pack], Niveles.actual + 1, datos["nombre"]]
 	# CONTADOR DE NIVEL ACTUAL / TOTAL
 	lbl_progreso.text = "Nivel %d / %d" % [Niveles.actual + 1, Niveles.cantidad()]
@@ -139,24 +140,62 @@ func mover(dir: Vector2i) -> void:
 	var viejas := bloque.celdas()
 	volteos += 1
 	lbl_ayuda.text = ""
+	sonidos.tocar("volteo", randf_range(0.9, 1.15))
 	await bloque.voltear(dir, sig)
 
 	# SE ROMPEN AL SALIR SI YA NO AGUANTAN MÁS
+	var se_rompio := false
 	for c in viejas:
-		casillas[c].al_salir()
+		var k: Casilla = casillas[c]
+		var antes := k.roto
+		k.al_salir()
+		if k.roto and not antes:
+			se_rompio = true
+	if se_rompio:
+		sonidos.tocar("rotura", randf_range(0.9, 1.05))
 
 	if cae:
 		estado = "caido"
 		bloque.hundir(3.0, 1.0)
 		# AVISO EN EL CENTRO DE LA PANTALLA
 		lbl_aviso.text = "¡Te caíste!\nZ para deshacer  ·  R para reiniciar"
+		# SALPICADURA CUANDO EL BLOQUE TOCA EL AGUA
+		var donde := Vector3(bloque.global_position.x, -0.75, bloque.global_position.z)
+		await get_tree().create_timer(0.3).timeout
+		if estado == "caido":
+			Efectos.salpicadura(self, donde)
+			sonidos.tocar("salpicadura", randf_range(0.95, 1.05))
 		return
 
+	# GRIETA SI EL HIELO SE AGRIETA, SI NO UN GOLPE SECO
+	var se_agrieto := false
 	for c in nuevas:
-		casillas[c].aterrizar()
+		var k: Casilla = casillas[c]
+		k.aterrizar()
+		if (k.tipo == "H" or k.tipo == "G") and k.restantes() <= 1:
+			se_agrieto = true
+	if se_agrieto:
+		sonidos.tocar("grieta", randf_range(0.92, 1.08))
+	else:
+		sonidos.tocar("golpe", randf_range(0.9, 1.1))
 
 	if sig[2] == "S" and Vector2i(sig[0], sig[1]) == meta:
 		_ganar()
+	else:
+		_avisar_grietas()
+
+# LAS GRIETAS A UN VOLTEO DE DISTANCIA TIEMBLAN
+func _avisar_grietas() -> void:
+	var avisadas := {}
+	for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		var s := Bloque.siguiente(bloque.bx, bloque.bz, bloque.o, d)
+		for c in Bloque.celdas_de(s[0], s[1], s[2]):
+			if not casillas.has(c) or avisadas.has(c):
+				continue
+			var k: Casilla = casillas[c]
+			if not k.roto and (k.tipo == "H" or k.tipo == "G") and k.restantes() == 1:
+				avisadas[c] = true
+				k.temblar()
 
 func _ganar() -> void:
 	estado = "gano"
