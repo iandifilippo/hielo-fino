@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cmkxjaj6o1ujq" path="res://scripts/juego.gd" id="1_dayui"]
 [ext_resource type="PackedScene" uid="uid://bunomow7ir633" path="res://escenas/bloque.tscn" id="2_v0a8y"]
 [ext_resource type="Script" path="res://scripts/reloj.gd" id="3_reloj"]
+[ext_resource type="Script" path="res://scripts/sonidos.gd" id="4_sonidos"]
 
 [sub_resource type="Environment" id="Entorno"]
 background_mode = 1
@@ -37,6 +38,9 @@ mesh = SubResource("Plano_agua")
 [node name="Tablero" type="Node3D" parent="."]
 
 [node name="Bloque" parent="." instance=ExtResource("2_v0a8y")]
+
+[node name="Sonidos" type="Node" parent="."]
+script = ExtResource("4_sonidos")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 

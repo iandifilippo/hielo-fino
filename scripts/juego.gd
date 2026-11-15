@@ -10,6 +10,7 @@ extends Node3D
 @onready var lbl_mensaje: Label = $HUD/Mensaje
 @onready var lbl_ayuda: Label = $HUD/Ayuda
 @onready var reloj: Reloj = $HUD/Tiempo
+@onready var sonidos: Sonidos = $Sonidos
 @onready var lbl_progreso: Label = $HUD/Progreso
 @onready var lbl_aviso: Label = $HUD/Aviso
 
@@ -142,8 +143,15 @@ func mover(dir: Vector2i) -> void:
 	await bloque.voltear(dir, sig)
 
 	# SE ROMPEN AL SALIR SI YA NO AGUANTAN MÁS
+	var se_rompio := false
 	for c in viejas:
-		casillas[c].al_salir()
+		var k: Casilla = casillas[c]
+		var antes := k.roto
+		k.al_salir()
+		if k.roto and not antes:
+			se_rompio = true
+	if se_rompio:
+		sonidos.tocar("rotura", randf_range(0.9, 1.05))
 
 	if cae:
 		estado = "caido"
@@ -152,8 +160,17 @@ func mover(dir: Vector2i) -> void:
 		lbl_aviso.text = "¡Te caíste!\nZ para deshacer  ·  R para reiniciar"
 		return
 
+	# GRIETA SI EL HIELO SE AGRIETA, SI NO UN GOLPE SECO
+	var se_agrieto := false
 	for c in nuevas:
-		casillas[c].aterrizar()
+		var k: Casilla = casillas[c]
+		k.aterrizar()
+		if (k.tipo == "H" or k.tipo == "G") and k.restantes() <= 1:
+			se_agrieto = true
+	if se_agrieto:
+		sonidos.tocar("grieta", randf_range(0.92, 1.08))
+	else:
+		sonidos.tocar("golpe", randf_range(0.9, 1.1))
 
 	if sig[2] == "S" and Vector2i(sig[0], sig[1]) == meta:
 		_ganar()
