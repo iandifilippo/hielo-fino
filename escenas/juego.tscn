@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bunomow7ir633" path="res://escenas/bloque.tscn" id="2_v0a8y"]
 [ext_resource type="Script" path="res://scripts/reloj.gd" id="3_reloj"]
 [ext_resource type="Script" path="res://scripts/sonidos.gd" id="4_sonidos"]
+[ext_resource type="Shader" path="res://materiales/agua.gdshader" id="5_agua"]
 
 [sub_resource type="Environment" id="Entorno"]
 background_mode = 1
@@ -12,12 +13,21 @@ ambient_light_source = 2
 ambient_light_color = Color(0.55, 0.62, 0.8, 1)
 ambient_light_energy = 0.6
 
-[sub_resource type="StandardMaterial3D" id="Mat_agua"]
-albedo_color = Color(0.04, 0.12, 0.25, 1)
+[sub_resource type="ShaderMaterial" id="Mat_agua"]
+render_priority = 0
+shader = ExtResource("5_agua")
+shader_parameter/color_profundo = Color(0.02, 0.09, 0.22, 1)
+shader_parameter/color_claro = Color(0.08, 0.32, 0.55, 1)
+shader_parameter/velocidad = 0.6
+shader_parameter/altura_ola = 0.06
+shader_parameter/tamano_ola = 0.8
+shader_parameter/fuerza_reflejos = 0.35
 
 [sub_resource type="PlaneMesh" id="Plano_agua"]
 material = SubResource("Mat_agua")
 size = Vector2(80, 80)
+subdivide_width = 80
+subdivide_depth = 80
 
 [node name="Juego" type="Node3D"]
 script = ExtResource("1_dayui")
