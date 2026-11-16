@@ -66,3 +66,11 @@ func temblar() -> void:
 	for i in 10:
 		tw.tween_property(malla, "position:x", randf_range(-0.04, 0.04), 0.045)
 	tw.tween_property(malla, "position:x", 0.0, 0.05)
+
+# SUBE DESDE EL AGUA AL EMPEZAR EL NIVEL
+func entrar(retraso: float) -> void:
+	var destino := position.y
+	position.y = destino - 1.5
+	var tw := create_tween()
+	tw.tween_interval(retraso)
+	tw.tween_property(self, "position:y", destino, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

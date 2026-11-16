@@ -4,7 +4,7 @@ extends Node3D
 
 @onready var tablero: Node3D = $Tablero
 @onready var bloque: Bloque = $Bloque
-@onready var camara: Camera3D = $Camara
+@onready var camara: CamaraJuego = $Camara
 @onready var lbl_titulo: Label = $HUD/Titulo
 @onready var lbl_info: Label = $HUD/Info
 @onready var lbl_mensaje: Label = $HUD/Mensaje
@@ -23,6 +23,7 @@ var volteos := 0
 var tiempo := 0.0
 var estado := "jugando"       # "jugando", "caido", "gano" O "tiempo"
 var quieto := 0.0             # SEGUNDOS SIN TOCAR NADA
+var entrando := 0.0           # SEGUNDOS QUE DURA LA ENTRADA DEL NIVEL
 
 func _ready() -> void:
 	cargar_nivel()
@@ -46,12 +47,17 @@ func cargar_nivel() -> void:
 			c.position = Vector3(x + 0.5, -0.15, z + 0.5)
 			tablero.add_child(c)
 			c.configurar(letra)
+			# ENTRADA EN OLA: PRIMERO LAS DE ARRIBA A LA IZQUIERDA
+			c.entrar((x + z) * 0.035)
 			casillas[Vector2i(x, z)] = c
 			if letra == "I":
 				inicio = Vector2i(x, z)
 			elif letra == "M":
 				meta = Vector2i(x, z)
 	bloque.colocar(inicio.x, inicio.y, "S")
+	var ultima: float = (filas[0].length() + filas.size()) * 0.035
+	bloque.aparecer(ultima + 0.2)
+	entrando = ultima + 0.55
 
 	# CÁMARA MIRANDO AL CENTRO DEL TABLERO
 	var ancho: float = filas[0].length()
@@ -83,7 +89,9 @@ func cargar_nivel() -> void:
 # ---------- CADA FRAME ----------
 
 func _process(delta: float) -> void:
-	if estado == "jugando" or estado == "caido":
+	if entrando > 0.0:
+		entrando -= delta
+	elif estado == "jugando" or estado == "caido":
 		tiempo += delta
 	quieto += delta
 	if datos.get("sin_caida", false) and volteos == 0 and quieto > 4.0:
@@ -153,6 +161,7 @@ func mover(dir: Vector2i) -> void:
 			se_rompio = true
 	if se_rompio:
 		sonidos.tocar("rotura", randf_range(0.9, 1.05))
+		camara.sacudir(0.07)
 
 	if cae:
 		estado = "caido"
@@ -174,6 +183,9 @@ func mover(dir: Vector2i) -> void:
 		k.aterrizar()
 		if (k.tipo == "H" or k.tipo == "G") and k.restantes() <= 1:
 			se_agrieto = true
+	# GOLPE: EL BLOQUE SE APLASTA Y LA CÁMARA TIEMBLA POQUITO
+	bloque.aplastar()
+	camara.sacudir(0.03)
 	if se_agrieto:
 		sonidos.tocar("grieta", randf_range(0.92, 1.08))
 	else:
