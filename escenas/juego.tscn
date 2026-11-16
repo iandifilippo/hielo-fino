@@ -5,13 +5,28 @@
 [ext_resource type="Script" path="res://scripts/reloj.gd" id="3_reloj"]
 [ext_resource type="Script" path="res://scripts/sonidos.gd" id="4_sonidos"]
 [ext_resource type="Shader" path="res://materiales/agua.gdshader" id="5_agua"]
+[ext_resource type="Shader" path="res://materiales/cielo.gdshader" id="6_cielo"]
+
+[sub_resource type="ShaderMaterial" id="Mat_cielo"]
+shader = ExtResource("6_cielo")
+shader_parameter/color_arriba = Color(0.01, 0.02, 0.07, 1)
+shader_parameter/color_horizonte = Color(0.1, 0.18, 0.35, 1)
+shader_parameter/cantidad_estrellas = 0.996
+shader_parameter/brillo_estrellas = 1.2
+
+[sub_resource type="Sky" id="Cielo"]
+sky_material = SubResource("Mat_cielo")
 
 [sub_resource type="Environment" id="Entorno"]
-background_mode = 1
-background_color = Color(0.05, 0.08, 0.16, 1)
+background_mode = 2
+sky = SubResource("Cielo")
 ambient_light_source = 2
 ambient_light_color = Color(0.55, 0.62, 0.8, 1)
 ambient_light_energy = 0.6
+fog_enabled = true
+fog_light_color = Color(0.1, 0.18, 0.35, 1)
+fog_density = 0.012
+fog_sky_affect = 0.0
 
 [sub_resource type="ShaderMaterial" id="Mat_agua"]
 render_priority = 0
