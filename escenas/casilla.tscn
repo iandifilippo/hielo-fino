@@ -1,12 +1,22 @@
 [gd_scene format=3 uid="uid://dyxxcbevcekcc"]
 
 [ext_resource type="Script" uid="uid://csbg1kaat4koo" path="res://scripts/casilla.gd" id="1_eldc2"]
+[ext_resource type="Shader" path="res://materiales/hielo_cristal.gdshader" id="2_cristal"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_nieve"]
 albedo_color = Color(0.95, 0.96, 0.98, 1)
 
-[sub_resource type="StandardMaterial3D" id="Mat_hielo"]
-albedo_color = Color(0.62, 0.82, 0.95, 1)
+[sub_resource type="ShaderMaterial" id="Mat_hielo"]
+render_priority = 0
+shader = ExtResource("2_cristal")
+shader_parameter/color_claro = Color(0.72, 0.88, 1, 1)
+shader_parameter/color_oscuro = Color(0.3, 0.5, 0.95, 1)
+shader_parameter/facetas_por_metro = 3.0
+shader_parameter/inclinacion = 0.6
+shader_parameter/grosor_borde = 0.035
+shader_parameter/brillo_borde = 0.35
+shader_parameter/brillo_fresnel = 0.5
+shader_parameter/destellos = 0.6
 
 [sub_resource type="StandardMaterial3D" id="Mat_meta"]
 albedo_color = Color(0.96, 0.62, 0.15, 1)
