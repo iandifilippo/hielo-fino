@@ -14,6 +14,7 @@ var bz := 0
 var o := "S"
 var moviendo := false
 var _hundir: Tween
+var _entrada: Tween
  
 func colocar(x: int, z: int, ori: String) -> void:
 	bx = x
@@ -21,6 +22,8 @@ func colocar(x: int, z: int, ori: String) -> void:
 	o = ori
 	if _hundir and _hundir.is_valid():
 		_hundir.kill()
+	if _entrada and _entrada.is_valid():
+		_entrada.kill()
 	transform = transform_de(x, z, ori)
 	visible = true
  
@@ -85,3 +88,15 @@ func _rodar(angulo: float, inicio: Transform3D, pivote: Vector3, eje: Vector3) -
 func hundir(profundidad: float, segundos: float) -> void:
 	_hundir = create_tween()
 	_hundir.tween_property(self, "position:y", position.y - profundidad, segundos)
+
+# CAE DESDE ARRIBA AL EMPEZAR EL NIVEL
+func aparecer(retraso: float) -> void:
+	var abajo := position.y
+	position.y = abajo + 4.0
+	visible = false
+	moviendo = true
+	_entrada = create_tween()
+	_entrada.tween_interval(retraso)
+	_entrada.tween_callback(show)
+	_entrada.tween_property(self, "position:y", abajo, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	_entrada.tween_callback(func(): moviendo = false)
