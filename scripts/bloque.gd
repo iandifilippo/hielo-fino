@@ -100,3 +100,10 @@ func aparecer(retraso: float) -> void:
 	_entrada.tween_callback(show)
 	_entrada.tween_property(self, "position:y", abajo, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	_entrada.tween_callback(func(): moviendo = false)
+
+# SE APLASTA UN POQUITO AL CAER
+func aplastar() -> void:
+	var m: Node3D = $Malla
+	var tw := create_tween()
+	tw.tween_property(m, "scale", Vector3(1.08, 0.9, 1.08), 0.06)
+	tw.tween_property(m, "scale", Vector3.ONE, 0.12)

@@ -4,7 +4,7 @@ extends Node3D
 
 @onready var tablero: Node3D = $Tablero
 @onready var bloque: Bloque = $Bloque
-@onready var camara: Camera3D = $Camara
+@onready var camara: CamaraJuego = $Camara
 @onready var lbl_titulo: Label = $HUD/Titulo
 @onready var lbl_info: Label = $HUD/Info
 @onready var lbl_mensaje: Label = $HUD/Mensaje
@@ -161,6 +161,7 @@ func mover(dir: Vector2i) -> void:
 			se_rompio = true
 	if se_rompio:
 		sonidos.tocar("rotura", randf_range(0.9, 1.05))
+		camara.sacudir(0.07)
 
 	if cae:
 		estado = "caido"
@@ -182,6 +183,9 @@ func mover(dir: Vector2i) -> void:
 		k.aterrizar()
 		if (k.tipo == "H" or k.tipo == "G") and k.restantes() <= 1:
 			se_agrieto = true
+	# GOLPE: EL BLOQUE SE APLASTA Y LA CÁMARA TIEMBLA POQUITO
+	bloque.aplastar()
+	camara.sacudir(0.03)
 	if se_agrieto:
 		sonidos.tocar("grieta", randf_range(0.92, 1.08))
 	else:

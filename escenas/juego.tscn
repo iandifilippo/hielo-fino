@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/sonidos.gd" id="4_sonidos"]
 [ext_resource type="Shader" path="res://materiales/agua.gdshader" id="5_agua"]
 [ext_resource type="Shader" path="res://materiales/cielo.gdshader" id="6_cielo"]
+[ext_resource type="Script" path="res://scripts/camara.gd" id="7_camara"]
 
 [sub_resource type="ShaderMaterial" id="Mat_cielo"]
 shader = ExtResource("6_cielo")
@@ -59,6 +60,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.8, 0)
 mesh = SubResource("Plano_agua")
 
 [node name="Camara" type="Camera3D" parent="."]
+script = ExtResource("7_camara")
 
 [node name="Tablero" type="Node3D" parent="."]
 
