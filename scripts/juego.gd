@@ -223,6 +223,7 @@ func _ganar() -> void:
 	var hoyo: Casilla = casillas[meta]
 	hoyo.celebrar()
 	Efectos.estrella(self, hoyo.global_position + Vector3(0, 0.4, 0))
+	sonidos.tocar("estrella")
 	var par: int = datos["par"]
 	var estrellas := 1
 	if volteos <= par:

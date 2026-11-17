@@ -106,9 +106,24 @@ def salpicadura():
     return out
 
 
+# ARPEGIO ALEGRE AL LLEGAR A LA META
+def estrella():
+    notas = [1046.5, 1318.5, 1568.0, 2093.0]
+    n = int(SR * 0.9)
+    out = [0.0] * n
+    for k, f in enumerate(notas):
+        ini = int(SR * 0.08 * k)
+        for j in range(n - ini):
+            t = j / SR
+            tono = math.sin(2 * math.pi * f * t) + 0.3 * math.sin(4 * math.pi * f * t)
+            out[ini + j] += tono * env(t, 0.005, 0.18) * 0.5
+    return out
+
+
 if __name__ == "__main__":
     os.makedirs(CARPETA, exist_ok=True)
     guardar("golpe", golpe())
     guardar("volteo", volteo())
     guardar("rotura", rotura())
     guardar("salpicadura", salpicadura())
+    guardar("estrella", estrella())
