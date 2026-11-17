@@ -6,6 +6,7 @@ extends Node3D
 # La malla (Malla) está en la escena bloque.tscn.
  
 signal termino_volteo
+signal aparecio
  
 @export var duracion := 0.2   # segundos por volteo
  
@@ -88,6 +89,8 @@ func _rodar(angulo: float, inicio: Transform3D, pivote: Vector3, eje: Vector3) -
 func hundir(profundidad: float, segundos: float) -> void:
 	_hundir = create_tween()
 	_hundir.tween_property(self, "position:y", position.y - profundidad, segundos)
+	# AL TERMINAR SE ESCONDE, ASÍ NO SE MONTA SOBRE LA CASILLA
+	_hundir.tween_callback(hide)
 
 # CAE DESDE ARRIBA AL EMPEZAR EL NIVEL
 func aparecer(retraso: float) -> void:
@@ -99,7 +102,12 @@ func aparecer(retraso: float) -> void:
 	_entrada.tween_interval(retraso)
 	_entrada.tween_callback(show)
 	_entrada.tween_property(self, "position:y", abajo, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	_entrada.tween_callback(func(): moviendo = false)
+	_entrada.tween_callback(_al_aparecer)
+
+func _al_aparecer() -> void:
+	moviendo = false
+	aplastar()
+	aparecio.emit()
 
 # SE APLASTA UN POQUITO AL CAER
 func aplastar() -> void:

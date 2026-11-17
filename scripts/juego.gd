@@ -26,7 +26,13 @@ var quieto := 0.0             # SEGUNDOS SIN TOCAR NADA
 var entrando := 0.0           # SEGUNDOS QUE DURA LA ENTRADA DEL NIVEL
 
 func _ready() -> void:
+	bloque.aparecio.connect(_al_aparecer_bloque)
 	cargar_nivel()
+
+# EL BLOQUE CAE AL EMPEZAR: GOLPE Y TEMBLOR
+func _al_aparecer_bloque() -> void:
+	camara.sacudir(0.05)
+	sonidos.tocar("golpe", 0.85)
 
 # ---------- CARGAR NIVEL ----------
 
@@ -159,6 +165,7 @@ func mover(dir: Vector2i) -> void:
 		k.al_salir()
 		if k.roto and not antes:
 			se_rompio = true
+			Efectos.pedazos(self, k.global_position)
 	if se_rompio:
 		sonidos.tocar("rotura", randf_range(0.9, 1.05))
 		camara.sacudir(0.07)
@@ -211,7 +218,12 @@ func _avisar_grietas() -> void:
 
 func _ganar() -> void:
 	estado = "gano"
-	bloque.hundir(2.0, 0.8)
+	# EL BLOQUE ENTRA AL HOYO, LA META SE PONE VERDE Y SALE UNA ESTRELLA
+	bloque.hundir(2.6, 0.6)
+	var hoyo: Casilla = casillas[meta]
+	hoyo.celebrar()
+	Efectos.estrella(self, hoyo.global_position + Vector3(0, 0.4, 0))
+	sonidos.tocar("estrella")
 	var par: int = datos["par"]
 	var estrellas := 1
 	if volteos <= par:
