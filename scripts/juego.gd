@@ -26,7 +26,13 @@ var quieto := 0.0             # SEGUNDOS SIN TOCAR NADA
 var entrando := 0.0           # SEGUNDOS QUE DURA LA ENTRADA DEL NIVEL
 
 func _ready() -> void:
+	bloque.aparecio.connect(_al_aparecer_bloque)
 	cargar_nivel()
+
+# EL BLOQUE CAE AL EMPEZAR: GOLPE Y TEMBLOR
+func _al_aparecer_bloque() -> void:
+	camara.sacudir(0.05)
+	sonidos.tocar("golpe", 0.85)
 
 # ---------- CARGAR NIVEL ----------
 
