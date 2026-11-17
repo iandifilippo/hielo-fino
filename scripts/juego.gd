@@ -28,12 +28,17 @@ var entrando := 0.0           # SEGUNDOS QUE DURA LA ENTRADA DEL NIVEL
 
 func _ready() -> void:
 	bloque.aparecio.connect(_al_aparecer_bloque)
+	victoria.estrella_mostrada.connect(_al_mostrar_estrella)
 	cargar_nivel()
 
 # EL BLOQUE CAE AL EMPEZAR: GOLPE Y TEMBLOR
 func _al_aparecer_bloque() -> void:
 	camara.sacudir(0.05)
 	sonidos.tocar("golpe", 0.85)
+
+# CADA ESTRELLA SUENA MÁS AGUDA QUE LA ANTERIOR
+func _al_mostrar_estrella(numero: int) -> void:
+	sonidos.tocar("estrella", 1.5 + numero * 0.25)
 
 # ---------- CARGAR NIVEL ----------
 
