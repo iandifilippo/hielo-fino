@@ -165,6 +165,7 @@ func mover(dir: Vector2i) -> void:
 		k.al_salir()
 		if k.roto and not antes:
 			se_rompio = true
+			Efectos.pedazos(self, k.global_position)
 	if se_rompio:
 		sonidos.tocar("rotura", randf_range(0.9, 1.05))
 		camara.sacudir(0.07)
