@@ -11,6 +11,7 @@ extends Node3D
 @onready var lbl_ayuda: Label = $HUD/Ayuda
 @onready var reloj: Reloj = $HUD/Tiempo
 @onready var sonidos: Sonidos = $Sonidos
+@onready var victoria: Victoria = $HUD/Victoria
 @onready var lbl_progreso: Label = $HUD/Progreso
 @onready var lbl_aviso: Label = $HUD/Aviso
 
@@ -85,6 +86,7 @@ func cargar_nivel() -> void:
 	lbl_mensaje.text = ""
 	lbl_ayuda.text = ""
 	lbl_aviso.text = ""
+	victoria.ocultar()
 	if datos.get("sin_caida", false):
 		lbl_mensaje.text = "Lleva el bloque PARADO hasta la casilla naranja"
 	# MODO RETO: TIEMPO LÍMITE DEL NIVEL
@@ -230,7 +232,8 @@ func _ganar() -> void:
 		estrellas = 3
 	elif volteos <= par * 1.5:
 		estrellas = 2
-	lbl_aviso.text = "¡Lo lograste!  %s\nPulsa Espacio para seguir" % "★".repeat(estrellas)
+	# PANTALLA DE VICTORIA CON LAS ESTRELLAS
+	victoria.mostrar(estrellas)
 
 func _guardar() -> void:
 	var foto := {}

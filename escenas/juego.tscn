@@ -7,6 +7,7 @@
 [ext_resource type="Shader" path="res://materiales/agua.gdshader" id="5_agua"]
 [ext_resource type="Shader" path="res://materiales/cielo.gdshader" id="6_cielo"]
 [ext_resource type="Script" path="res://scripts/camara.gd" id="7_camara"]
+[ext_resource type="Script" path="res://scripts/victoria.gd" id="8_victoria"]
 
 [sub_resource type="ShaderMaterial" id="Mat_cielo"]
 shader = ExtResource("6_cielo")
@@ -130,3 +131,11 @@ theme_override_colors/font_outline_color = Color(0.03, 0.06, 0.14, 1)
 theme_override_constants/outline_size = 10
 theme_override_font_sizes/font_size = 44
 horizontal_alignment = 1
+
+[node name="Victoria" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("8_victoria")
