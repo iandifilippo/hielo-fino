@@ -15,11 +15,13 @@ var roto := false
  
 @onready var malla: MeshInstance3D = $Malla
 @onready var grieta: Node3D = $Grieta
+var _luz: OmniLight3D
  
 func configurar(t: String) -> void:
 	tipo = t
 	if tipo == "M":
 		malla.material_override = mat_meta
+		_latir()
 	elif tipo == "H" or tipo == "G":
 		malla.material_override = mat_hielo
 	else:
@@ -74,3 +76,14 @@ func entrar(retraso: float) -> void:
 	var tw := create_tween()
 	tw.tween_interval(retraso)
 	tw.tween_property(self, "position:y", destino, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+# LA META BRILLA Y LATE PARA QUE EL OJO SE VAYA A ELLA
+func _latir() -> void:
+	_luz = OmniLight3D.new()
+	_luz.light_color = Color(1.0, 0.6, 0.2)
+	_luz.omni_range = 2.5
+	_luz.position = Vector3(0, 0.6, 0)
+	add_child(_luz)
+	var tw := create_tween().set_loops()
+	tw.tween_property(_luz, "light_energy", 1.6, 0.7).set_trans(Tween.TRANS_SINE)
+	tw.tween_property(_luz, "light_energy", 0.5, 0.7).set_trans(Tween.TRANS_SINE)
