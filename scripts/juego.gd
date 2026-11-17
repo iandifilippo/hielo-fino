@@ -218,7 +218,11 @@ func _avisar_grietas() -> void:
 
 func _ganar() -> void:
 	estado = "gano"
-	bloque.hundir(2.0, 0.8)
+	# EL BLOQUE ENTRA AL HOYO, LA META SE PONE VERDE Y SALE UNA ESTRELLA
+	bloque.hundir(2.6, 0.6)
+	var hoyo: Casilla = casillas[meta]
+	hoyo.celebrar()
+	Efectos.estrella(self, hoyo.global_position + Vector3(0, 0.4, 0))
 	var par: int = datos["par"]
 	var estrellas := 1
 	if volteos <= par:

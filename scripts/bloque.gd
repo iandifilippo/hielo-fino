@@ -89,6 +89,8 @@ func _rodar(angulo: float, inicio: Transform3D, pivote: Vector3, eje: Vector3) -
 func hundir(profundidad: float, segundos: float) -> void:
 	_hundir = create_tween()
 	_hundir.tween_property(self, "position:y", position.y - profundidad, segundos)
+	# AL TERMINAR SE ESCONDE, ASÍ NO SE MONTA SOBRE LA CASILLA
+	_hundir.tween_callback(hide)
 
 # CAE DESDE ARRIBA AL EMPEZAR EL NIVEL
 func aparecer(retraso: float) -> void:

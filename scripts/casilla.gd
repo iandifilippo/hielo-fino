@@ -87,3 +87,14 @@ func _latir() -> void:
 	var tw := create_tween().set_loops()
 	tw.tween_property(_luz, "light_energy", 1.6, 0.7).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(_luz, "light_energy", 0.5, 0.7).set_trans(Tween.TRANS_SINE)
+
+# LA META SE PONE VERDE AL GANAR
+func celebrar() -> void:
+	var verde := StandardMaterial3D.new()
+	verde.albedo_color = Color(0.3, 0.85, 0.4)
+	verde.emission_enabled = true
+	verde.emission = Color(0.2, 0.9, 0.35)
+	verde.emission_energy_multiplier = 0.5
+	malla.material_override = verde
+	if _luz:
+		_luz.light_color = Color(0.3, 1.0, 0.45)
