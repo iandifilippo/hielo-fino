@@ -76,15 +76,14 @@ func cargar_nivel() -> void:
 	var alto: float = filas.size()
 	var centro := Vector3(ancho / 2.0, 0, alto / 2.0)
 	var lejos := maxf(ancho, alto)
-	camara.position = centro + Vector3(0, lejos * 0.75 + 3.0, lejos * 0.55 + 3.0)
-	camara.look_at(centro)
+	camara.enfocar(centro, lejos)
 
 	historial.clear()
 	volteos = 0
 	tiempo = 0.0
 	quieto = 0.0
 	estado = "jugando"
-	var nombres := {"facil": "Fácil", "dificil": "Difícil", "reto": "Reto"}
+	var nombres := {"facil": "Fácil", "dificil": "Difícil", "reto": "Reto", "extension": "Extensión"}
 	lbl_titulo.text = "%s %d: %s" % [nombres[Niveles.pack], Niveles.actual + 1, datos["nombre"]]
 	# CONTADOR DE NIVEL ACTUAL / TOTAL
 	lbl_progreso.text = "Nivel %d / %d" % [Niveles.actual + 1, Niveles.cantidad()]
@@ -108,7 +107,7 @@ func _process(delta: float) -> void:
 		tiempo += delta
 	quieto += delta
 	if datos.get("sin_caida", false) and volteos == 0 and quieto > 4.0:
-		lbl_ayuda.text = "Usa las flechas  ←  ↑  ↓  →  (o W A S D)"
+		lbl_ayuda.text = "Usa  W A S D  para voltear  ·  flechas para girar la cámara"
 	lbl_info.text = "Volteos: %d   (par: %d)" % [volteos, datos["par"]]
 	reloj.mostrar(tiempo)
 	if reloj.se_acabo(tiempo) and (estado == "jugando" or estado == "caido"):
@@ -125,14 +124,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if bloque.moviendo:
 		return
 	match tecla.keycode:
-		KEY_RIGHT, KEY_D:
-			mover(Vector2i(1, 0))
-		KEY_LEFT, KEY_A:
-			mover(Vector2i(-1, 0))
-		KEY_UP, KEY_W:
-			mover(Vector2i(0, -1))
-		KEY_DOWN, KEY_S:
-			mover(Vector2i(0, 1))
+		KEY_D:
+			mover(_segun_camara(Vector2i(1, 0)))
+		KEY_A:
+			mover(_segun_camara(Vector2i(-1, 0)))
+		KEY_W:
+			mover(_segun_camara(Vector2i(0, -1)))
+		KEY_S:
+			mover(_segun_camara(Vector2i(0, 1)))
 		KEY_Z:
 			deshacer()
 		KEY_R:
@@ -143,6 +142,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_ESCAPE:
 			get_tree().change_scene_to_file("res://escenas/menu.tscn")
 
+# W SIEMPRE ES "HACIA ADELANTE EN LA PANTALLA", AUNQUE LA CÁMARA ESTÉ GIRADA
+func _segun_camara(dir: Vector2i) -> Vector2i:
+	for i in camara.cuartos():
+		dir = Vector2i(dir.y, -dir.x)
+	return dir
+
 # ---------- REGLAS ----------
 
 func mover(dir: Vector2i) -> void:
@@ -150,6 +155,12 @@ func mover(dir: Vector2i) -> void:
 		return
 	var sig := Bloque.siguiente(bloque.bx, bloque.bz, bloque.o, dir)
 	var nuevas := Bloque.celdas_de(sig[0], sig[1], sig[2])
+	# LAS PAREDES NO DEJAN PASAR: SOLO UN TOPE
+	for c in nuevas:
+		if casillas.has(c) and casillas[c].tipo == "P":
+			camara.sacudir(0.02)
+			sonidos.tocar("golpe", 0.6)
+			return
 	var cae := false
 	for c in nuevas:
 		if not casillas.has(c) or casillas[c].roto:

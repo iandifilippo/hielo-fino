@@ -8,6 +8,7 @@ extends Node3D
 @export var mat_nieve: Material
 @export var mat_hielo: Material
 @export var mat_meta: Material
+@export var mat_pared: Material
  
 var tipo := "N"
 var golpes := 0          # cuántas veces ha aterrizado el bloque encima
@@ -24,6 +25,13 @@ func configurar(t: String) -> void:
 		_latir()
 	elif tipo == "H" or tipo == "G":
 		malla.material_override = mat_hielo
+	elif tipo == "P":
+		# PARED ALTA QUE NO SE PUEDE PASAR
+		var alta := BoxMesh.new()
+		alta.size = Vector3(0.96, 1.6, 0.96)
+		malla.mesh = alta
+		malla.position.y = 0.65
+		malla.material_override = mat_pared
 	else:
 		malla.material_override = mat_nieve
 	actualizar()
