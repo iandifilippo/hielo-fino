@@ -24,6 +24,8 @@ func _ready() -> void:
 	fondo.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(fondo)
 
+	_crear_nieve()
+
 	var centro := CenterContainer.new()
 	centro.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(centro)
@@ -109,3 +111,23 @@ func _elegir(pack: String) -> void:
 
 func _on_salir() -> void:
 	get_tree().quit()
+
+# COPOS DE NIEVE CAYENDO DESPACIO DETRÁS DEL MENÚ
+func _crear_nieve() -> void:
+	var ancho := get_viewport_rect().size.x
+	var copos := CPUParticles2D.new()
+	copos.amount = 90
+	copos.lifetime = 14.0
+	copos.preprocess = 14.0
+	copos.position = Vector2(ancho / 2.0, -20)
+	copos.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	copos.emission_rect_extents = Vector2(ancho / 2.0 + 40, 4)
+	copos.direction = Vector2(0, 1)
+	copos.spread = 15.0
+	copos.gravity = Vector2(0, 8)
+	copos.initial_velocity_min = 25.0
+	copos.initial_velocity_max = 50.0
+	copos.scale_amount_min = 2.0
+	copos.scale_amount_max = 5.0
+	copos.color = Color(1, 1, 1, 0.7)
+	add_child(copos)
