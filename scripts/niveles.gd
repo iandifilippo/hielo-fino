@@ -183,8 +183,14 @@ const PACKS := {
 	],
 }
  
+# "reto" no tiene niveles propios: junta todos seguidos (sin el tutorial).
+static func lista() -> Array:
+	if pack == "reto":
+		return PACKS["facil"].slice(1) + PACKS["medio"] + PACKS["dificil"]
+	return PACKS[pack]
+
 static func nivel() -> Dictionary:
-	return PACKS[pack][actual]
- 
+	return lista()[actual]
+
 static func cantidad() -> int:
-	return PACKS[pack].size()
+	return lista().size()

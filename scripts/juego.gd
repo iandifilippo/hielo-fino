@@ -72,7 +72,7 @@ func cargar_nivel() -> void:
 	tiempo = 0.0
 	quieto = 0.0
 	estado = "jugando"
-	var nombres := {"facil": "Fácil", "medio": "Medio", "dificil": "Difícil"}
+	var nombres := {"facil": "Fácil", "medio": "Medio", "dificil": "Difícil", "reto": "Reto"}
 	lbl_titulo.text = "%s %d: %s" % [nombres[Niveles.pack], Niveles.actual + 1, datos["nombre"]]
 	lbl_mensaje.text = ""
 	lbl_ayuda.text = ""
