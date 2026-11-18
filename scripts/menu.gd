@@ -70,12 +70,26 @@ func _ready() -> void:
 	subtitulo.add_theme_font_size_override("font_size", 28)
 	caja_dificultad.add_child(subtitulo)
 
+	# FILA: DIFICULTADES A LA IZQUIERDA, EXTENSIÓN CUADRADA A LA DERECHA
+	var fila := HBoxContainer.new()
+	fila.add_theme_constant_override("separation", 20)
+	caja_dificultad.add_child(fila)
+
+	var columna := VBoxContainer.new()
+	columna.add_theme_constant_override("separation", 20)
+	fila.add_child(columna)
 	btn_facil = _boton("Fácil", _elegir.bind("facil"))
-	caja_dificultad.add_child(btn_facil)
-	caja_dificultad.add_child(_boton("Difícil", _elegir.bind("dificil")))
+	columna.add_child(btn_facil)
+	columna.add_child(_boton("Difícil", _elegir.bind("dificil")))
 	var reto := _boton("Reto", _elegir.bind("reto"))
 	reto.tooltip_text = "Contra el reloj: cada nivel con menos tiempo"
-	caja_dificultad.add_child(reto)
+	columna.add_child(reto)
+
+	var extension := _boton("Extensión\n\nniveles con\nparedes", _elegir.bind("extension"))
+	extension.custom_minimum_size = Vector2(220, 220)
+	extension.add_theme_font_size_override("font_size", 22)
+	fila.add_child(extension)
+
 	caja_dificultad.add_child(_boton("Volver", _on_volver))
 
 	btn_jugar.grab_focus()
