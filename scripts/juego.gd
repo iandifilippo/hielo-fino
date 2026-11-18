@@ -27,6 +27,7 @@ var historial := []           # cómo estaba todo antes de cada volteo (para Z)
 var volteos := 0
 var tiempo := 0.0
 var estado := "jugando"       # "jugando", "caido" o "gano"
+var limite := 0.0            # cuenta regresiva en segundos (0 = sin límite; solo en Reto)
 var quieto := 0.0             # segundos sin tocar nada (para la ayuda del tutorial)
  
 func _ready() -> void:
@@ -72,10 +73,13 @@ func cargar_nivel() -> void:
 	tiempo = 0.0
 	quieto = 0.0
 	estado = "jugando"
-	var nombres := {"facil": "Fácil", "medio": "Medio", "dificil": "Difícil", "reto": "Reto"}
+	var nombres := {"facil": "Fácil", "dificil": "Difícil", "reto": "Reto"}
 	lbl_titulo.text = "%s %d: %s" % [nombres[Niveles.pack], Niveles.actual + 1, datos["nombre"]]
+	limite = float(datos.get("tiempo", 0))
 	lbl_mensaje.text = ""
 	lbl_ayuda.text = ""
+	if limite > 0.0:
+		lbl_mensaje.text = "¡Contra el reloj!  Tienes %d:%02d" % [int(limite) / 60, int(limite) % 60]
 	if datos.get("sin_caida", false):
 		lbl_mensaje.text = "Lleva el bloque PARADO hasta la casilla naranja"
  
@@ -87,7 +91,7 @@ func _ubicar_camara() -> void:
 # ---------- cada frame ----------
  
 func _process(delta: float) -> void:
-	if estado != "gano":
+	if estado != "gano" and estado != "tiempo":
 		tiempo += delta
 	quieto += delta
  
@@ -105,8 +109,22 @@ func _process(delta: float) -> void:
 	if datos.get("sin_caida", false) and volteos == 0 and quieto > 4.0:
 		lbl_ayuda.text = "Usa  W A S D  para voltear el bloque"
 	lbl_info.text = "Volteos: %d   (par: %d)" % [volteos, datos["par"]]
-	var seg := int(tiempo)
-	lbl_tiempo.text = "%d:%02d" % [seg / 60, seg % 60]
+	if limite > 0.0:
+		# Reto: cuenta regresiva
+		var restante := maxf(limite - tiempo, 0.0)
+		var seg_r := ceili(restante)
+		lbl_tiempo.text = "%d:%02d" % [seg_r / 60, seg_r % 60]
+		if restante <= 10.0:
+			lbl_tiempo.add_theme_color_override("font_color", Color(1, 0.35, 0.3))
+		else:
+			lbl_tiempo.remove_theme_color_override("font_color")
+		if restante <= 0.0 and (estado == "jugando" or estado == "caido"):
+			estado = "tiempo"
+			lbl_mensaje.text = "¡Se acabó el tiempo!  R para reintentar"
+	else:
+		lbl_tiempo.remove_theme_color_override("font_color")
+		var seg := int(tiempo)
+		lbl_tiempo.text = "%d:%02d" % [seg / 60, seg % 60]
  
 # ---------- teclas ----------
  
@@ -197,7 +215,7 @@ func _guardar() -> void:
 	historial.push_back({"bloque": [bloque.bx, bloque.bz, bloque.o], "casillas": foto})
  
 func deshacer() -> void:
-	if historial.is_empty() or estado == "gano":
+	if historial.is_empty() or estado == "gano" or estado == "tiempo":
 		return
 	var foto: Dictionary = historial.pop_back()
 	for pos in foto["casillas"]:

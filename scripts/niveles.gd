@@ -8,6 +8,7 @@ static var actual := 0
 # Letras: . agua, N nieve (no se rompe), I inicio (nieve), H hielo (aguanta 2),
 # G hielo agrietado (aguanta 1), M hoyo meta (hay que llegar parado).
 const PACKS := {
+	# FÁCIL: solo nieve, nada se agrieta. Puro movimiento.
 	"facil": [
 		{
 			"nombre": "Primeros pasos",
@@ -21,107 +22,52 @@ const PACKS := {
 			],
 		},
 		{
-			"nombre": "Hielo delgado",
-			"par": 8,
+			"nombre": "Paso a paso",
+			"par": 7,
 			"filas": [
-				"NN.......",
-				"NIH......",
-				"HHHH.....",
-				"HHHH.....",
-				"HHHHH....",
-				"H..HHHHHM",
+				"NNM..",
+				"NNNNN",
+				"..NNI",
+				"..NNN",
 			],
 		},
 		{
-			"nombre": "No pises dos veces",
-			"par": 8,
-			"filas": [
-				".....HH.",
-				".H..HHHH",
-				"NN.HHHH.",
-				"NIHHHHH.",
-				"NHH..HHH",
-				"HHHH.M..",
-			],
-		},
-		{
-			"nombre": "La orilla",
-			"par": 8,
-			"filas": [
-				"....H....",
-				"HHHHHH...",
-				"HHHHHH...",
-				"NH..HHHH.",
-				"NI..HHHMH",
-				"NNH...H..",
-			],
-		},
-		{
-			"nombre": "Camino largo",
+			"nombre": "Dando vueltas",
 			"par": 9,
 			"filas": [
-				".HH.....",
-				".NN....H",
-				"HHI....H",
-				"HHHHHHHH",
-				".HHHHHHM",
-				"..HHH...",
+				"NN....",
+				"NNNNNN",
+				".NNNMN",
+				"...NIN",
+				"...NNN",
+			],
+		},
+		{
+			"nombre": "El pasillo largo",
+			"par": 12,
+			"filas": [
+				".N....",
+				".N....",
+				".N....",
+				"NNNNIN",
+				"NNN...",
+				"NMN...",
+			],
+		},
+		{
+			"nombre": "La esquina",
+			"par": 14,
+			"filas": [
+				"M.NNN",
+				"NNNIN",
+				"NNNNN",
+				"NN...",
+				".N...",
+				".N...",
 			],
 		},
 	],
-	"medio": [
-		{
-			"nombre": "Hielo viejo",
-			"par": 14,
-			"filas": [
-				"NN...HH......",
-				"NIHHGGH.G.H..",
-				"NNHHGHHHHHHHH",
-				"HG.H.G.H..GHH",
-				"........GMHHH",
-				"........HHHHG",
-				"........HGH..",
-			],
-		},
-		{
-			"nombre": "Dos caminos",
-			"par": 14,
-			"filas": [
-				".........GH.H",
-				".H......HMHHG",
-				".NNG......HHH",
-				"HNIGHH.....HH",
-				".NNHHH...HHHH",
-				".H.HHGHHGHHHH",
-				"...HH.H.H.HHH",
-			],
-		},
-		{
-			"nombre": "El rodeo",
-			"par": 15,
-			"filas": [
-				"....GGHGGHHHH",
-				"..GHHHHH..GHH",
-				"..HHHH...HHMG",
-				"HHHH.......G.",
-				"HHI..........",
-				"HHHH.........",
-			],
-		},
-		{
-			"nombre": "Sin vuelta atrás",
-			"par": 16,
-			"filas": [
-				"......MHHHHHG",
-				".......HH.HGH",
-				"............H",
-				".H..........H",
-				".NN.G......GG",
-				".NIHGGHHHGHHH",
-				"HNN.GHHGHHHHH",
-			],
-		},
-	],
+	# DIFÍCIL: hielo y grietas desde el nivel 1.
 	"dificil": [
 		{
 			"nombre": "El centro",
@@ -180,17 +126,94 @@ const PACKS := {
 				"NNG............",
 			],
 		},
+		{
+			"nombre": "Mil grietas",
+			"par": 26,
+			"filas": [
+				".GH.GHGG.HG....",
+				"HHNHGGGNGNNN...",
+				"GG...GNGNGNN...",
+				"H.HNG......NHHH",
+				"HGGNNN..G.HN...",
+				"HINNNNH.NGMNG..",
+				"NGNNNHH.GGHG...",
+			],
+		},
+	],
+	# RETO: cuenta regresiva ("tiempo", en segundos). Cada nivel da menos tiempo que el anterior.
+	"reto": [
+		{
+			"nombre": "Hielo viejo",
+			"par": 14,
+			"tiempo": 150,
+			"filas": [
+				"NN...HH......",
+				"NIHHGGH.G.H..",
+				"NNHHGHHHHHHHH",
+				"HG.H.G.H..GHH",
+				"........GMHHH",
+				"........HHHHG",
+				"........HGH..",
+			],
+		},
+		{
+			"nombre": "Dos caminos",
+			"par": 14,
+			"tiempo": 130,
+			"filas": [
+				".........GH.H",
+				".H......HMHHG",
+				".NNG......HHH",
+				"HNIGHH.....HH",
+				".NNHHH...HHHH",
+				".H.HHGHHGHHHH",
+				"...HH.H.H.HHH",
+			],
+		},
+		{
+			"nombre": "El rodeo",
+			"par": 15,
+			"tiempo": 110,
+			"filas": [
+				"....GGHGGHHHH",
+				"..GHHHHH..GHH",
+				"..HHHH...HHMG",
+				"HHHH.......G.",
+				"HHI..........",
+				"HHHH.........",
+			],
+		},
+		{
+			"nombre": "Sin vuelta atrás",
+			"par": 16,
+			"tiempo": 90,
+			"filas": [
+				"......MHHHHHG",
+				".......HH.HGH",
+				"............H",
+				".H..........H",
+				".NN.G......GG",
+				".NIHGGHHHGHHH",
+				"HNN.GHHGHHHHH",
+			],
+		},
+		{
+			"nombre": "Última carrera",
+			"par": 19,
+			"tiempo": 70,
+			"filas": [
+				".GI......G.",
+				"GMHHG.G.GNH",
+				".GHGNNNHNHH",
+				"..GNGNH.GNG",
+				"...HNNHHGG.",
+			],
+		},
 	],
 }
  
-# "reto" no tiene niveles propios: junta todos seguidos (sin el tutorial).
-static func lista() -> Array:
-	if pack == "reto":
-		return PACKS["facil"].slice(1) + PACKS["medio"] + PACKS["dificil"]
-	return PACKS[pack]
-
 static func nivel() -> Dictionary:
-	return lista()[actual]
-
+	return PACKS[pack][actual]
+ 
 static func cantidad() -> int:
-	return lista().size()
+	return PACKS[pack].size()

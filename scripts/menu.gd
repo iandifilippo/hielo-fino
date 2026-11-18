@@ -54,7 +54,7 @@ func _ready() -> void:
 	caja_dificultad.add_child(btn_facil)
 	caja_dificultad.add_child(_crear_boton("Difícil", _elegir.bind("dificil")))
 	var reto := _crear_boton("Reto", _elegir.bind("reto"))
-	reto.tooltip_text = "Todos los niveles seguidos, del más fácil al más difícil"
+	reto.tooltip_text = "Contra el reloj: 5 niveles y cada uno con menos tiempo"
 	caja_dificultad.add_child(reto)
 	caja_dificultad.add_child(_crear_boton("Volver", _on_volver))
 
