@@ -6,7 +6,7 @@ const LISTA := [
 	{
 		"nombre": "Hielo viejo",
 		"par": 14,
-		"tiempo": 150,
+		"tiempo": 60,
 		"filas": [
 			"NN...HH......",
 			"NIHHGGH.G.H..",
@@ -20,7 +20,7 @@ const LISTA := [
 	{
 		"nombre": "Dos caminos",
 		"par": 14,
-		"tiempo": 130,
+		"tiempo": 55,
 		"filas": [
 			".........GH.H",
 			".H......HMHHG",
@@ -34,7 +34,7 @@ const LISTA := [
 	{
 		"nombre": "El rodeo",
 		"par": 15,
-		"tiempo": 110,
+		"tiempo": 50,
 		"filas": [
 			"....GGHGGHHHH",
 			"..GHHHHH..GHH",
@@ -47,7 +47,7 @@ const LISTA := [
 	{
 		"nombre": "Sin vuelta atrás",
 		"par": 16,
-		"tiempo": 90,
+		"tiempo": 45,
 		"filas": [
 			"......MHHHHHG",
 			".......HH.HGH",
@@ -61,7 +61,7 @@ const LISTA := [
 	{
 		"nombre": "Última carrera",
 		"par": 19,
-		"tiempo": 70,
+		"tiempo": 40,
 		"filas": [
 			".GI......G.",
 			"GMHHG.G.GNH",

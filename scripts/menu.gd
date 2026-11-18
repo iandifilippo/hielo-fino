@@ -9,10 +9,22 @@ var btn_facil: Button
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	var fondo := ColorRect.new()
-	fondo.color = Color(0.05, 0.08, 0.16)
+	# FONDO EN DEGRADADO: NOCHE ARRIBA, AZUL HIELO ABAJO
+	var degradado := Gradient.new()
+	degradado.set_color(0, Color(0.02, 0.04, 0.1))
+	degradado.set_color(1, Color(0.1, 0.2, 0.38))
+	var textura := GradientTexture2D.new()
+	textura.gradient = degradado
+	textura.fill_from = Vector2(0, 0)
+	textura.fill_to = Vector2(0, 1)
+	var fondo := TextureRect.new()
+	fondo.texture = textura
+	fondo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	fondo.stretch_mode = TextureRect.STRETCH_SCALE
 	fondo.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(fondo)
+
+	_crear_nieve()
 
 	var centro := CenterContainer.new()
 	centro.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -25,8 +37,18 @@ func _ready() -> void:
 	var titulo := Label.new()
 	titulo.text = "HIELO FINO"
 	titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	titulo.add_theme_font_size_override("font_size", 64)
+	titulo.add_theme_font_size_override("font_size", 72)
+	titulo.add_theme_color_override("font_color", Color(0.8, 0.93, 1.0))
+	titulo.add_theme_constant_override("outline_size", 14)
+	titulo.add_theme_color_override("font_outline_color", Color(0.1, 0.25, 0.5))
 	caja.add_child(titulo)
+
+	var lema := Label.new()
+	lema.text = "Un puzzle de hielo que se rompe"
+	lema.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lema.add_theme_font_size_override("font_size", 20)
+	lema.add_theme_color_override("font_color", Color(0.6, 0.75, 0.9))
+	caja.add_child(lema)
 
 	# MENÚ 1: JUGAR / SALIR
 	caja_principal = VBoxContainer.new()
@@ -62,6 +84,7 @@ func _boton(texto: String, accion: Callable) -> Button:
 	var b := Button.new()
 	b.text = texto
 	b.custom_minimum_size = Vector2(260, 60)
+	Estilo.boton(b)
 	b.pressed.connect(accion)
 	return b
 
@@ -88,3 +111,23 @@ func _elegir(pack: String) -> void:
 
 func _on_salir() -> void:
 	get_tree().quit()
+
+# COPOS DE NIEVE CAYENDO DESPACIO DETRÁS DEL MENÚ
+func _crear_nieve() -> void:
+	var ancho := get_viewport_rect().size.x
+	var copos := CPUParticles2D.new()
+	copos.amount = 90
+	copos.lifetime = 14.0
+	copos.preprocess = 14.0
+	copos.position = Vector2(ancho / 2.0, -20)
+	copos.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	copos.emission_rect_extents = Vector2(ancho / 2.0 + 40, 4)
+	copos.direction = Vector2(0, 1)
+	copos.spread = 15.0
+	copos.gravity = Vector2(0, 8)
+	copos.initial_velocity_min = 25.0
+	copos.initial_velocity_max = 50.0
+	copos.scale_amount_min = 2.0
+	copos.scale_amount_max = 5.0
+	copos.color = Color(1, 1, 1, 0.7)
+	add_child(copos)

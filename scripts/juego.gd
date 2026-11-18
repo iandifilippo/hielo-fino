@@ -11,6 +11,7 @@ extends Node3D
 @onready var lbl_ayuda: Label = $HUD/Ayuda
 @onready var reloj: Reloj = $HUD/Tiempo
 @onready var sonidos: Sonidos = $Sonidos
+@onready var victoria: Victoria = $HUD/Victoria
 @onready var lbl_progreso: Label = $HUD/Progreso
 @onready var lbl_aviso: Label = $HUD/Aviso
 
@@ -27,12 +28,17 @@ var entrando := 0.0           # SEGUNDOS QUE DURA LA ENTRADA DEL NIVEL
 
 func _ready() -> void:
 	bloque.aparecio.connect(_al_aparecer_bloque)
+	victoria.estrella_mostrada.connect(_al_mostrar_estrella)
 	cargar_nivel()
 
 # EL BLOQUE CAE AL EMPEZAR: GOLPE Y TEMBLOR
 func _al_aparecer_bloque() -> void:
 	camara.sacudir(0.05)
 	sonidos.tocar("golpe", 0.85)
+
+# CADA ESTRELLA SUENA MÁS AGUDA QUE LA ANTERIOR
+func _al_mostrar_estrella(numero: int) -> void:
+	sonidos.tocar("estrella", 1.5 + numero * 0.25)
 
 # ---------- CARGAR NIVEL ----------
 
@@ -85,6 +91,7 @@ func cargar_nivel() -> void:
 	lbl_mensaje.text = ""
 	lbl_ayuda.text = ""
 	lbl_aviso.text = ""
+	victoria.ocultar()
 	if datos.get("sin_caida", false):
 		lbl_mensaje.text = "Lleva el bloque PARADO hasta la casilla naranja"
 	# MODO RETO: TIEMPO LÍMITE DEL NIVEL
@@ -230,7 +237,8 @@ func _ganar() -> void:
 		estrellas = 3
 	elif volteos <= par * 1.5:
 		estrellas = 2
-	lbl_aviso.text = "¡Lo lograste!  %s\nPulsa Espacio para seguir" % "★".repeat(estrellas)
+	# PANTALLA DE VICTORIA CON LAS ESTRELLAS
+	victoria.mostrar(estrellas)
 
 func _guardar() -> void:
 	var foto := {}
