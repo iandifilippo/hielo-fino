@@ -30,8 +30,28 @@ var estado := "jugando"       # "jugando", "caido" o "gano"
 var limite := 0.0            # cuenta regresiva en segundos (0 = sin límite; solo en Reto)
 var quieto := 0.0             # segundos sin tocar nada (para la ayuda del tutorial)
  
+var sfx_grieta: AudioStreamPlayer
+var sfx_rotura: AudioStreamPlayer
+
 func _ready() -> void:
+	# Efecto de sonido del hielo (se crea aquí para no tocar la escena)
+	var ruta := "res://sonidos/grieta.wav"
+	sfx_grieta = AudioStreamPlayer.new()
+	sfx_rotura = AudioStreamPlayer.new()
+	if ResourceLoader.exists(ruta):
+		sfx_grieta.stream = load(ruta)
+		sfx_rotura.stream = load(ruta)
+	sfx_grieta.volume_db = -4.0
+	sfx_rotura.volume_db = -2.0
+	add_child(sfx_grieta)
+	add_child(sfx_rotura)
 	cargar_nivel()
+
+func _sonar(p: AudioStreamPlayer, tono: float) -> void:
+	if p.stream == null:
+		return
+	p.pitch_scale = tono
+	p.play()
  
 # ---------- cargar un nivel ----------
  
@@ -182,8 +202,15 @@ func mover(dir: Vector2i) -> void:
 	await bloque.voltear(dir, sig)
  
 	# Las casillas que ya aguantaron todo se rompen cuando el bloque se va
+	var se_rompio := false
 	for c in viejas:
-		casillas[c].al_salir()
+		var k: Casilla = casillas[c]
+		var estaba_rota := k.roto
+		k.al_salir()
+		if k.roto and not estaba_rota:
+			se_rompio = true
+	if se_rompio:
+		_sonar(sfx_rotura, 0.7)   # la casilla se rompe: más grave
  
 	if cae:
 		estado = "caido"
@@ -191,8 +218,15 @@ func mover(dir: Vector2i) -> void:
 		lbl_mensaje.text = "¡Te caíste!  Z para deshacer o R para reiniciar"
 		return
  
+	var se_agrieto := false
 	for c in nuevas:
-		casillas[c].aterrizar()
+		var k: Casilla = casillas[c]
+		k.aterrizar()
+		# Hielo que se agrieta al pisarlo (H la primera vez, G siempre)
+		if k.tipo == "G" or (k.tipo == "H" and k.golpes == 1):
+			se_agrieto = true
+	if se_agrieto:
+		_sonar(sfx_grieta, randf_range(0.92, 1.08))
  
 	if sig[2] == "S" and Vector2i(sig[0], sig[1]) == meta:
 		_ganar()
