@@ -150,6 +150,12 @@ func mover(dir: Vector2i) -> void:
 		return
 	var sig := Bloque.siguiente(bloque.bx, bloque.bz, bloque.o, dir)
 	var nuevas := Bloque.celdas_de(sig[0], sig[1], sig[2])
+	# LAS PAREDES NO DEJAN PASAR: SOLO UN TOPE
+	for c in nuevas:
+		if casillas.has(c) and casillas[c].tipo == "P":
+			camara.sacudir(0.02)
+			sonidos.tocar("golpe", 0.6)
+			return
 	var cae := false
 	for c in nuevas:
 		if not casillas.has(c) or casillas[c].roto:
